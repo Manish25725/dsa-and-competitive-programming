@@ -1,0 +1,22 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int helper(string& s,int size,int sum,int idx,vector<vector<int>>& dp){
+        if(idx<0) return 0;
+        if(dp[idx][size]!=-1) return dp[idx][size];
+        int notpick=helper(s,size,sum,idx-1,dp);
+        int pick=0;
+        if((sum-(s[idx]-'0')*pow(2,size))>=0){
+            pick=1+helper(s,size+1,sum-(s[idx]-'0')*pow(2,size),idx-1,dp);
+        }
+        return dp[idx][size]=max(pick,notpick);
+    }
+    int longestSubsequence(string s, int k){
+        int n=s.size();
+        vector<vector<int>> dp(n,vector<int> (n,-1));
+        return helper(s,0,k,n-1,dp);
+    }
+};
+
