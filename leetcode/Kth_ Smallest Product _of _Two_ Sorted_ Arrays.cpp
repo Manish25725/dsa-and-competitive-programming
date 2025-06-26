@@ -1,57 +1,59 @@
-long long countPairs(vector<int>& nums1, vector<int>& nums2, long long x) {
-    long long count = 0;
-    int m = nums2.size();
+#include<bits/stdc++.h>
+using namespace std;~
 
-    for (int a : nums1) {
-        if (a == 0) {
-            if (x >= 0) count += m;
-        } else if (a > 0) {
-            // manual upper_bound
-            int left = 0, right = m - 1, pos = -1;
-            long long target = x / a;
-            while (left <= right) {
-                int mid = left + (right - left) / 2;
-                if (nums2[mid] <= target) {
-                    pos = mid;
-                    left = mid + 1;
-                } else {
-                    right = mid - 1;
-                }
+class Solution {
+public:
+    long long helper(vector<int>& nums1, vector<int>& nums2, long long target){
+        long long  count=0;
+        int n=nums2.size();
+        for(int a : nums1){
+            if(a==0){
+                if(target>=0) count+=n;
             }
-            count += (pos + 1);
-        } else {
-            // a < 0: manual lower_bound
-            int left = 0, right = m - 1, pos = m;
-            long long target = x / a;
-            if (x % a != 0) target++; // ceil
-            while (left <= right) {
-                int mid = left + (right - left) / 2;
-                if (nums2[mid] >= target) {
-                    pos = mid;
-                    right = mid - 1;
-                } else {
-                    left = mid + 1;
+            else if(a>0){
+                int m=-1;
+                int low=0,high=n-1;
+                while(low<=high){
+                    int mid=low+(high-low)/2;
+                    long long product=1LL*a*nums2[mid];
+                    if(product<=target){
+                        m=mid;
+                        low=mid+1;
+                    }
+                    else high=mid-1;
                 }
+                count+=(m+1);
             }
-            count += m - pos;
-        }
-    }
-    return count;
-}
-
-
-
- long long kthSmallestProduct(vector<int>& nums1, vector<int>& nums2, long long k) {
-        long long low = -1e10, high = 1e10;
-
-        while (low < high) {
-            long long mid = (low + high) / 2;
-            if (countPairs(nums1, nums2, mid) >= k) {
-                high = mid;
-            } else {
-                low = mid + 1;
+            else{
+                int lo=0,hi=n-1;
+                int m=n;
+                while(lo<=hi){
+                    int mid=lo+(hi-lo)/2;
+                    long long product=1LL*nums2[mid]*a;
+                    if(product<=target){
+                        m=mid;
+                        hi=mid-1;
+                    }
+                    else lo=mid+1;
+                }
+                count+=(n-m);
             }
         }
-
-        return low;
+        return count;
     }
+    long long kthSmallestProduct(vector<int>& nums1, vector<int>& nums2, long long k){
+        long long result=0;
+        long long l=-1e10;
+        long long r=1e10;
+        while(l<=r){
+            long long mid=l+(r-l)/2;
+            long long countsmallest=helper(nums1,nums2,mid);
+            if(countsmallest>=k){
+                result=mid;
+                r=mid-1;
+            }
+            else l=mid+1;
+        }
+        return result;
+    }
+};
